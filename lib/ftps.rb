@@ -4,7 +4,7 @@ begin
 rescue LoadError
 end
 
-class DoubleBagFTPS < Net::FTP
+class FTPS < Net::FTP
   EXPLICIT = :explicit
   IMPLICIT = :implicit
   IMPLICIT_PORT = 990
@@ -19,21 +19,8 @@ class DoubleBagFTPS < Net::FTP
   def initialize(host = nil, user = nil, passwd = nil, acct = nil, ftps_mode = EXPLICIT, ssl_context_params = {})
     raise ArgumentError unless valid_ftps_mode?(ftps_mode)
     @ftps_mode = ftps_mode
-    @ssl_context = DoubleBagFTPS.create_ssl_context(ssl_context_params)
+    @ssl_context = self.class.create_ssl_context(ssl_context_params)
     super(host, user, passwd, acct)
-  end
-
-  def DoubleBagFTPS.open(host, user = nil, passwd = nil, acct = nil, ftps_mode = EXPLICIT, ssl_context_params = {})
-    if block_given?
-      ftps = new(host, user, passwd, acct, ftps_mode, ssl_context_params)
-      begin
-        yield ftps
-      ensure
-        ftps.close
-      end
-    else
-      new(host, user, passwd, acct, ftps_mode, ssl_context_params)
-    end
   end
 
   #
@@ -65,9 +52,9 @@ class DoubleBagFTPS < Net::FTP
         @sock = ssl_socket(@sock)
       end
     end
-    
+
     super(user, passwd, acct)
-    voidcmd('PBSZ 0') # The expected value for Protection Buffer Size (PBSZ) is 0 for TLS/SSL 
+    voidcmd('PBSZ 0') # The expected value for Protection Buffer Size (PBSZ) is 0 for TLS/SSL
     voidcmd('PROT P') # Set data channel protection level to Private
   end
 
@@ -154,11 +141,26 @@ class DoubleBagFTPS < Net::FTP
   end
   private :ssl_socket
 
-  def DoubleBagFTPS.create_ssl_context(params = {})
-    raise 'SSL extension not installed' unless defined?(OpenSSL)
-    context = OpenSSL::SSL::SSLContext.new
-    context.set_params(params)
-    return context
+  class << self
+    def create_ssl_context(params = {})
+      raise 'SSL extension not installed' unless defined?(OpenSSL)
+      context = OpenSSL::SSL::SSLContext.new
+      context.set_params(params)
+      return context
+    end
+
+    def open(host, user = nil, passwd = nil, acct = nil, ftps_mode = EXPLICIT, ssl_context_params = {})
+      if block_given?
+        ftps = new(host, user, passwd, acct, ftps_mode, ssl_context_params)
+        begin
+          yield ftps
+        ensure
+          ftps.close
+        end
+      else
+        new(host, user, passwd, acct, ftps_mode, ssl_context_params)
+      end
+    end
   end
-  
+
 end

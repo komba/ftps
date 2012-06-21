@@ -1,30 +1,30 @@
-DoubleBagFTPS
+FTPS
 =============
 
-DoubleBagFTPS extends the core Net::FTP class to provide implicit and explicit FTPS support.
+FTPS extends the core Net::FTP class to provide implicit and explicit FTPS support.
 
 Install
 -------
 
-    $ [sudo] gem install double-bag-ftps
+    $ [sudo] gem install ftps
 
 **Note**: Your Ruby installation must have OpenSSL support.
 
 Usage
 -----
-    require 'double_bag_ftps'
+    require 'ftps'
 
 Example 1:
 
     # Connect to a host using explicit FTPS and do not verify the host's cert
-    ftps = DoubleBagFTPS.new
-    ftps.ssl_context = DoubleBagFTPS.create_ssl_context(:verify_mode => OpenSSL::SSL::VERIFY_NONE)
+    ftps = FTPS.new
+    ftps.ssl_context = FTPS.create_ssl_context(:verify_mode => OpenSSL::SSL::VERIFY_NONE)
     ftps.connect('some host')
     ftps.login('usr', 'passwd')
 
 Example 2:
 
-    DoubleBagFTPS.open('host', 'usr', 'passwd', nil, DoubleBagFTPS::IMPLICIT) do |ftps|
+    FTPS.open('host', 'usr', 'passwd', nil, FTPS::IMPLICIT) do |ftps|
       ...
     end
 
@@ -32,17 +32,17 @@ Interface
 ---------
 
     # Constants used for setting FTPS mode
-    DoubleBagFTPS::EXPLICIT
-    DoubleBagFTPS::IMPLICIT
+    FTPS::EXPLICIT
+    FTPS::IMPLICIT
 
-    DoubleBagFTPS.new(host = nil, user = nil, passwd = nil, acct = nil, ftps_mode = EXPLICIT, ssl_context_params = {})
-    DoubleBagFTPS.open(host, user = nil, passwd = nil, acct = nil, ftps_mode = EXPLICIT, ssl_context_params = {})
+    FTPS.new(host = nil, user = nil, passwd = nil, acct = nil, ftps_mode = EXPLICIT, ssl_context_params = {})
+    FTPS.open(host, user = nil, passwd = nil, acct = nil, ftps_mode = EXPLICIT, ssl_context_params = {})
 
     # Returns an OpenSSL::SSL::SSLContext using params to set set the corresponding SSLContext attributes.
-    DoubleBagFTPS.create_ssl_context(params = {})
+    FTPS.create_ssl_context(params = {})
 
-    # Set the FTPS mode to implicit (DoubleBagFTPS::IMPLICIT) or explicit (DoubleBagFTPS::EXPLICIT).
-    # The default FTPS mode is explicit. 
+    # Set the FTPS mode to implicit (FTPS::IMPLICIT) or explicit (FTPS::EXPLICIT).
+    # The default FTPS mode is explicit.
     ftps_mode=(ftps_mode)
 
     # Same as Net::FTP.connect, but will use port 990 when using implicit FTPS and a port is not specified.
@@ -62,4 +62,4 @@ More Information
 
 License
 -------
-Copyright © 2011, Bryan Nix. DoubleBagFTPS is released under the MIT license. See LICENSE file for details.
+Copyright © 2011, Bryan Nix. FTPS is released under the MIT license. See LICENSE file for details.
